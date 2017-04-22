@@ -9,6 +9,8 @@
         [int]$buildNumber = $env:BUILD_BUILDID
     )
 
+    "Vsix-SetBuildVersion: $manifestFilePath, $buildNumber" | Write-Host
+
     [xml]$vsixXml=Get-Content $manifestFilePath
 
     [Version]$version = $vsixXml.PackageManifest.Metadata.Identity.Version
@@ -31,6 +33,8 @@ function Project-SetBuildVersion
         [int]$buildNumber = $env:BUILD_BUILDID
     )
 
+    "Project-SetBuildVersion: $projectFilePath, $buildNumber" | Write-Host
+
     [xml]$projectXml=Get-Content $projectFilePath
     [Version]$version = $projectXml.Project.PropertyGroup[0].ApplicationVersion
 
@@ -51,6 +55,8 @@ function Source-SetBuildVersion
         [Parameter(Position=1, Mandatory=0)]
         [int]$buildNumber = $env:BUILD_BUILDID
     )
+
+    "Source-SetBuildVersion: $sourceFilePath, $buildNumber" | Write-Host
 
     $source = Get-Content $sourceFilePath
     $replacement = "`$1.$buildNumber.`$2"
