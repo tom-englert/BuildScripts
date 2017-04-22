@@ -79,8 +79,8 @@ function Vsix-PublishToGallery
     $vsixUploadEndpoint = "http://vsixgallery.com/api/upload"
     
     [Reflection.Assembly]::LoadWithPartialName("System.Web") | Out-Null
-    $repository=[System.Web.HttpUtility]::UrlEncode($repository)
     $issueTracker=[System.Web.HttpUtility]::UrlEncode($repository + "issues/")
+    $repository=[System.Web.HttpUtility]::UrlEncode($repository)
 
     [string]$url = ($vsixUploadEndpoint + "?repo=" + $repository + "&issuetracker=" + $issueTracker)
 
