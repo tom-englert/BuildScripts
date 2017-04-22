@@ -64,13 +64,14 @@ function Source-SetBuildVersion
     $source | Set-Content $sourceFilePath
 }
 
-function Vsix-PublishToGallery{
+function Vsix-PublishToGallery
+{
     [cmdletbinding()]
     param (
         [Parameter(Position=0, Mandatory=1 ,ValueFromPipeline=$true)]
         [string[]]$vsixFile,
         [Parameter(Position=1, Mandatory=0)]
-        [string[]]$repository = $env:BUILD_REPOSITORY_URI
+        [string[]]$repository = "https://github.com/$env:BUILD_REPOSITORY_NAME/"
     )
 
     "Upload to VsixGallery: $vsixFile $repository" | Write-Host
