@@ -19,7 +19,7 @@
 
     $vsixXml.PackageManifest.Metadata.Identity.Version = [string]$version
 
-    $vsixXml.Save($vsixManifest)
+    $vsixXml.Save($manifestFilePath)
 }
 
 function Project-SetBuildVersion
