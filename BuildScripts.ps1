@@ -11,7 +11,7 @@
 
     "Vsix-SetBuildVersion: $manifestFilePath, $buildNumber" | Write-Host
 
-    [xml]$vsixXml=Get-Content $manifestFilePath
+    [xml]$vsixXml = Get-Content $manifestFilePath
 
     [Version]$version = $vsixXml.PackageManifest.Metadata.Identity.Version
 
@@ -69,22 +69,16 @@ function Vsix-PublishToGallery
     [cmdletbinding()]
     param (
         [Parameter(Position=0, Mandatory=1 ,ValueFromPipeline=$true)]
-        [string[]]$vsixFile,
+        [string]$vsixFile,
         [Parameter(Position=1, Mandatory=0)]
-        [string[]]$repository = "https://github.com/$env:BUILD_REPOSITORY_NAME/"
+        [string]$repository = "$env:BUILD_REPOSITORY_NAME"
     )
 
     "Upload to VsixGallery: $vsixFile $repository" | Write-Host
 
     $vsixUploadEndpoint = "http://vsixgallery.com/api/upload"
     
-    [Reflection.Assembly]::LoadWithPartialName("System.Web") | Out-Null
-
-    [string]$issueTracker = ($repository + "issues/")
-    $repository = [System.Web.HttpUtility]::UrlEncode($repository)
-    $issueTracker = [System.Web.HttpUtility]::UrlEncode($issueTracker)
-
-    [string]$url = ($vsixUploadEndpoint + "?repo=" + $repository + "&issuetracker=" + $issueTracker)
+    [string]$url = Vsix-GetUpoadUrl $repository
 
     $url | Write-Host
 
@@ -98,4 +92,27 @@ function Vsix-PublishToGallery
         'FAIL' | Write-Error
         $_.Exception.Response.Headers["x-error"] | Write-Error
     }
+}
+
+function Vsix-GetUpoadUrl
+{
+    [cmdletbinding()]
+    param (
+        [Parameter(Position=0, Mandatory=0)]
+        [string]$repository = "$env:BUILD_REPOSITORY_NAME"
+    )
+
+    $vsixUploadEndpoint = "http://vsixgallery.com/api/upload"
+    
+    [Reflection.Assembly]::LoadWithPartialName("System.Web") | Out-Null
+    $repository = "https://github.com/$repository"
+
+    [string]$issueTracker = "$repository/issues"
+
+    $repository = [System.Web.HttpUtility]::UrlEncode($repository)
+    $issueTracker = [System.Web.HttpUtility]::UrlEncode($issueTracker)
+
+    [string]$url = $vsixUploadEndpoint + "?repo=" + $repository + "&issuetracker=" + $issueTracker
+
+    return $url
 }
