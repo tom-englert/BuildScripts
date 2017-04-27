@@ -38,7 +38,7 @@ function Project-SetBuildVersion
     [xml]$projectXml=Get-Content $projectFilePath
     [Version]$version = $projectXml.Project.PropertyGroup[0].ApplicationVersion
 
-    $version = New-Object Version ([int]$version.Major),([int]$version.Minor),$buildNumber
+    $version = New-Object Version ([int]$version.Major),([int]$version.Minor),$buildNumber,([int]$version.Revision)
 
     $projectXml.Project.PropertyGroup[0].ApplicationVersion = [string]$version
 
