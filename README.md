@@ -1,2 +1,2 @@
 # BuildScripts
-Common build scripts to use on the build server
+Common build scripts to use on a vsNext build server
