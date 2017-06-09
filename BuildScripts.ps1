@@ -1,4 +1,7 @@
-﻿function Vsix-SetBuildVersion 
+﻿# update the version number in the vsix manifest by replacing the build number with the specified value. 
+# only works with manifest v2 (VS2012 and newer)
+# returns the updated version
+function Vsix-SetBuildVersion 
 {
     [cmdletbinding()]
     param (
@@ -20,8 +23,12 @@
     $vsixXml.PackageManifest.Metadata.Identity.Version = [string]$version
 
     $vsixXml.Save($manifestFilePath)
+
+    return [string]$version
 }
 
+# update the publish application version number in a project file by replacing the build number with the specified value. 
+# returns the updated version
 function Project-SetBuildVersion
 {
     [cmdletbinding()]
@@ -43,8 +50,13 @@ function Project-SetBuildVersion
     $projectXml.Project.PropertyGroup[0].ApplicationVersion = [string]$version
 
     $projectXml.Save($projectFilePath)
+
+    return [string]$version
 }
 
+# update the version number in a C# source file by replacing the build number with the specified value. 
+# the version must be represented in the file as 'version = "#.#.#.#', usually 'const string version = "#.#.#.#";'
+# returns the updated version
 function Source-SetBuildVersion
 {
     [cmdletbinding()]
@@ -62,6 +74,25 @@ function Source-SetBuildVersion
     $replacement = "`$1.$buildNumber.`$2"
     $source = $source -replace '(version\s+=\s+"\d+.\d+).\d+.(\d+")', $replacement
     $source | Set-Content $sourceFilePath
+
+    $matchInfo = $source | Select-String -Pattern 'version\s+=\s+"(\d+.\d+.\d+.\d+)"'
+    return $matchInfo.Matches[0].Groups[1].Value
+}
+
+# generates the command string to update the vsNext build number by appending _$version
+# write this command to the host to let the build server execute it.
+function Build-AppendVersionToBuildNumber
+{
+    [cmdletbinding()]
+    param (
+        [Parameter(Position=0, Mandatory=1, ValueFromPipeline=$true)]
+        [string]$version,
+
+        [Parameter(Position=1, Mandatory=0)]
+        [string]$buildNumber = $env:Build_BuildNumber
+    )
+
+   return "##vso[build.updatebuildnumber]" + $buildNumber + "_" + $version
 }
 
 function Vsix-PublishToGallery
