@@ -52,5 +52,9 @@ Assert-FilesEqual "ResXManager.csproj"
 $command = Build-AppendVersionToBuildNumber "1.0.42" "BuildNumber"
 Assert-AreEqual "##vso[build.updatebuildnumber]BuildNumber_1.0.42" $command
 
+$newVersion = Source-SetBuildVersionToRevision "$PSScriptRoot\TestFiles\Test\version1.cs" $version
+Assert-AreEqual "1.0.0.42" $newVersion
+Assert-FilesEqual "version1.cs"
+
 
 

@@ -79,6 +79,31 @@ function Source-SetBuildVersion
     return $matchInfo.Matches[0].Groups[1].Value
 }
 
+# update the version number in a C# source file by replacing the revision number with the specified value. 
+# the version must be represented in the file as 'version = "#.#.#.#', usually 'const string version = "#.#.#.#";'
+# returns the updated version
+function Source-SetBuildVersionToRevision
+{
+    [cmdletbinding()]
+    param (
+        [Parameter(Position=0, Mandatory=1, ValueFromPipeline=$true)]
+        [string]$sourceFilePath,
+
+        [Parameter(Position=1, Mandatory=0)]
+        [int]$buildNumber = $env:BUILD_BUILDID
+    )
+
+    "Source-SetBuildVersion: $sourceFilePath, $buildNumber" | Write-Host
+
+    $source = Get-Content $sourceFilePath
+    $replacement = "`$1.$buildNumber`$2"
+    $source = $source -replace '(version\s+=\s+"\d+.\d+.\d+).\d+(")', $replacement
+    $source | Set-Content $sourceFilePath
+
+    $matchInfo = $source | Select-String -Pattern 'version\s+=\s+"(\d+.\d+.\d+.\d+)"'
+    return $matchInfo.Matches[0].Groups[1].Value
+}
+
 # generates the command string to update the vsNext build number by appending _$version
 # write this command to the host to let the build server execute it.
 function Build-AppendVersionToBuildNumber
