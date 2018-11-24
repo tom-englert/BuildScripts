@@ -56,5 +56,6 @@ $newVersion = Source-SetBuildVersionToRevision "$PSScriptRoot\TestFiles\Test\ver
 Assert-AreEqual "1.0.0.42" $newVersion
 Assert-FilesEqual "version1.cs"
 
-
+Project-SetVersion "$PSScriptRoot\TestFiles\Test\Directory.Build.props" $version
+Assert-FilesEqual "Directory.Build.props"
 

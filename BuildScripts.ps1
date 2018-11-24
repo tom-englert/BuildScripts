@@ -43,11 +43,50 @@ function Project-SetBuildVersion
     "Project-SetBuildVersion: $projectFilePath, $buildNumber" | Write-Host
 
     [xml]$projectXml=Get-Content $projectFilePath
-    [Version]$version = $projectXml.Project.PropertyGroup[0].ApplicationVersion
+    $propertyGroup = $projectXml.Project.PropertyGroup | Select -First 1
+    [Version]$version = $propertyGroup.ApplicationVersion
 
-    $version = New-Object Version ([int]$version.Major),([int]$version.Minor),$buildNumber,([int]$version.Revision)
+    $major = [math]::Max([int]$version.Major, 0)
+    $minor = [math]::Max([int]$version.Minor, 0)
+    $revision = [math]::Max([int]$version.Revision, 0)
 
-    $projectXml.Project.PropertyGroup[0].ApplicationVersion = [string]$version
+    $version = New-Object Version ([int]$major),([int]$minor),$buildNumber,$revision
+
+    $propertyGroup.ApplicationVersion = [string]$version
+
+    $projectXml.Save($projectFilePath)
+
+    return [string]$version
+}
+
+# update the version number in a project file by replacing the build number part with the specified value. 
+# returns the updated version
+function Project-SetVersion
+{
+    [cmdletbinding()]
+    param (
+        [Parameter(Position=0, Mandatory=1, ValueFromPipeline=$true)]
+        [string]$projectFilePath,
+
+        [Parameter(Position=1, Mandatory=0)]
+        [int]$buildNumber = $env:BUILD_BUILDID
+    )
+
+    "Project-SetVersion: $projectFilePath, $buildNumber" | Write-Host
+
+    [xml]$projectXml=Get-Content $projectFilePath
+
+    $propertyGroup = $projectXml.Project.PropertyGroup | Select -First 1
+
+    [Version]$version = $propertyGroup.Version
+
+    $major = [math]::Max([int]$version.Major, 0)
+    $minor = [math]::Max([int]$version.Minor, 0)
+    $revision = [math]::Max([int]$version.Revision, 0)
+
+    $version = New-Object Version ([int]$major),([int]$minor),$buildNumber,$revision
+
+    $propertyGroup.Version = [string]$version
 
     $projectXml.Save($projectFilePath)
 
@@ -93,7 +132,7 @@ function Source-SetBuildVersionToRevision
         [int]$buildNumber = $env:BUILD_BUILDID
     )
 
-    "Source-SetBuildVersion: $sourceFilePath, $buildNumber" | Write-Host
+    "Source-SetBuildVersionToRevision: $sourceFilePath, $buildNumber" | Write-Host
 
     $source = Get-Content $sourceFilePath
     $replacement = "`$1.$buildNumber`$2"
