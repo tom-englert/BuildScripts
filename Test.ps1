@@ -1,5 +1,7 @@
 ﻿cd $PSScriptRoot
 
+"Folder: $PSScriptRoot" | Write-Host
+
 # (new-object Net.WebClient).DownloadString("https://raw.github.com/tom-englert/BuildScripts/master/BuildScripts.ps1") | iex
 
 (Get-Content "BuildScripts.ps1") -join "`r`n" | iex
@@ -59,3 +61,5 @@ Assert-FilesEqual "version1.cs"
 Project-SetVersion "$PSScriptRoot\TestFiles\Test\Directory.Build.props" $version
 Assert-FilesEqual "Directory.Build.props"
 
+Project-SetVersion "$PSScriptRoot\TestFiles\Test\BetaVersion.props" $version
+Assert-FilesEqual "BetaVersion.props"

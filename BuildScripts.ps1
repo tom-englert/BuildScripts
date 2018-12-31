@@ -78,15 +78,11 @@ function Project-SetVersion
 
     $propertyGroup = $projectXml.Project.PropertyGroup | Select -First 1
 
-    [Version]$version = $propertyGroup.Version
+    $version = $propertyGroup.Version
+    $replacement = "`$1.$buildNumber`$3"
+    $version = $version -replace '(\d+\.\d+)(\.\d+)?(.*)', $replacement
 
-    $major = [math]::Max([int]$version.Major, 0)
-    $minor = [math]::Max([int]$version.Minor, 0)
-    $revision = [math]::Max([int]$version.Revision, 0)
-
-    $version = New-Object Version ([int]$major),([int]$minor),$buildNumber,$revision
-
-    $propertyGroup.Version = [string]$version
+    $propertyGroup.Version = $version
 
     $projectXml.Save($projectFilePath)
 
