@@ -63,3 +63,9 @@ Assert-FilesEqual "Directory.Build.props"
 
 Project-SetVersion "$PSScriptRoot\TestFiles\Test\BetaVersion.props" $version
 Assert-FilesEqual "BetaVersion.props"
+
+Project-SetVersionRevision "$PSScriptRoot\TestFiles\Test\Directory.Build.revision.props" $version
+Assert-FilesEqual "Directory.Build.revision.props"
+
+Project-SetVersionRevision "$PSScriptRoot\TestFiles\Test\BetaVersion.revision.props" $version
+Assert-FilesEqual "BetaVersion.revision.props"

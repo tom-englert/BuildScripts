@@ -89,6 +89,36 @@ function Project-SetVersion
     return [string]$version
 }
 
+# update the version number in a project file by replacing the revision part with the specified value. 
+# returns the updated version
+function Project-SetVersionRevision
+{
+    [cmdletbinding()]
+    param (
+        [Parameter(Position=0, Mandatory=1, ValueFromPipeline=$true)]
+        [string]$projectFilePath,
+
+        [Parameter(Position=1, Mandatory=0)]
+        [int]$buildNumber = $env:BUILD_BUILDID
+    )
+
+    "Project-SetVersionRevision: $projectFilePath, $buildNumber" | Write-Host
+
+    [xml]$projectXml=Get-Content $projectFilePath
+
+    $propertyGroup = $projectXml.Project.PropertyGroup | Select -First 1
+
+    $version = $propertyGroup.Version
+    $replacement = "`$1.$buildNumber`$3"
+    $version = $version -replace '(\d+\.\d+\.\d+)\.(\d+)(.*)', $replacement
+
+    $propertyGroup.Version = $version
+
+    $projectXml.Save($projectFilePath)
+
+    return [string]$version
+}
+
 # update the version number in a C# source file by replacing the build number with the specified value. 
 # the version must be represented in the file as 'version = "#.#.#.#', usually 'const string version = "#.#.#.#";'
 # returns the updated version
