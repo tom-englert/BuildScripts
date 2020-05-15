@@ -1,4 +1,19 @@
-﻿# update the version number in the vsix manifest by replacing the build number with the specified value. 
+﻿#remove semantic version suffixes from a version string, e.g. 3.3.4-beta1 => 3.3.4
+function Version-Sanitize
+{
+    [cmdletbinding()]
+    param (
+        [Parameter(Position=0, Mandatory=1, ValueFromPipeline=$true)]
+        [string]$version
+    )
+
+    $PATTERN = "(\d+)\-[\w\d]+"
+    $REPLACEMENT = "`$1"
+
+    return $version -replace $PATTERN, $REPLACEMENT
+}
+
+# update the version number in the vsix manifest by replacing the build number with the specified value. 
 # only works with manifest v2 (VS2012 and newer)
 # returns the updated version
 function Vsix-SetBuildVersion 

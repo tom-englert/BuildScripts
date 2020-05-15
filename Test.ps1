@@ -69,3 +69,6 @@ Assert-FilesEqual "Directory.Build.revision.props"
 
 Project-SetVersionRevision "$PSScriptRoot\TestFiles\Test\BetaVersion.revision.props" $version
 Assert-FilesEqual "BetaVersion.revision.props"
+
+$newVersion = Version-Sanitize "3.2.4-beta7"
+Assert-AreEqual "3.2.4" $newVersion
