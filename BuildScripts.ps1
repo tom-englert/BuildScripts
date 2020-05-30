@@ -225,8 +225,11 @@ function Vsix-PublishToGallery
         'OK' | Write-Host -ForegroundColor Green
     }
     catch{
-        'FAIL' | Write-Error
-        $_.Exception.Response.Headers["x-error"] | Write-Error
+        'Upload to VsixGallery FAILED' | Write-Host -ForegroundColor Red
+        '-Exception: >' + $_.Exception + '<' | Write-Host -ForegroundColor Red
+        '-Response: >' + $_.Exception.Response + '<' | Write-Host -ForegroundColor Red
+        '-Error: >' + $_.Exception.Response.Headers["x-error"] + '<' | Write-Host -ForegroundColor Red
+        throw
     }
 }
 
