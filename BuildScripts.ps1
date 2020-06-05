@@ -200,6 +200,8 @@ function Build-AppendVersionToBuildNumber
    return "##vso[build.updatebuildnumber]" + $buildNumber + "_" + $version
 }
 
+# uploads a vsix package to the vsixgallery
+# see https://github.com/madskristensen/ExtensionScripts/blob/master/AppVeyor/vsix.ps1
 function Vsix-PublishToGallery
 {
     [cmdletbinding()]
@@ -212,16 +214,13 @@ function Vsix-PublishToGallery
 
     "Upload to VsixGallery: $vsixFile $repository" | Write-Host
 
-    $vsixUploadEndpoint = "http://vsixgallery.com/api/upload"
-    
     [string]$url = Vsix-GetUpoadUrl $repository
 
     $url | Write-Host
 
-    [byte[]]$bytes = [System.IO.File]::ReadAllBytes($vsixFile)
-
     try {
-        $response = Invoke-WebRequest $url -Method Post -Body $bytes -UseBasicParsing
+        $webclient = New-Object System.Net.WebClient
+        $webclient.UploadFile($url, $vsixFile) | Out-Null
         'OK' | Write-Host -ForegroundColor Green
     }
     catch{
@@ -241,7 +240,8 @@ function Vsix-GetUpoadUrl
         [string]$repository = "$env:BUILD_REPOSITORY_NAME"
     )
 
-    $vsixUploadEndpoint = "http://vsixgallery.com/api/upload"
+    $vsixUploadEndpoint = "https://www.vsixgallery.com/api/upload"
+    
     
     [Reflection.Assembly]::LoadWithPartialName("System.Web") | Out-Null
     $repository = "https://github.com/$repository"
