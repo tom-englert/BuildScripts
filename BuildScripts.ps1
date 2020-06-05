@@ -218,6 +218,9 @@ function Vsix-PublishToGallery
 
     $url | Write-Host
 
+    'cache data' | Write-Host
+    [byte[]]$bytes = [System.IO.File]::ReadAllBytes($vsixFile)
+
     try {
         $webclient = New-Object System.Net.WebClient
         $webclient.UploadFile($url, $vsixFile) | Out-Null
