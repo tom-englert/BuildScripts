@@ -215,11 +215,10 @@ function Vsix-PublishToGallery
     "Upload to VsixGallery: $vsixFile $repository" | Write-Host
 
     [string]$url = Vsix-GetUpoadUrl $repository
-
     $url | Write-Host
-
-    'cache data' | Write-Host
-    [byte[]]$bytes = [System.IO.File]::ReadAllBytes($vsixFile)
+    if ([Net.ServicePointManager]::SecurityProtocol -notcontains 'Tls12') {
+        [Net.ServicePointManager]::SecurityProtocol += [Net.SecurityProtocolType]::Tls12
+    }
 
     try {
         $webclient = New-Object System.Net.WebClient
@@ -244,6 +243,7 @@ function Vsix-GetUpoadUrl
     )
 
     $vsixUploadEndpoint = "https://www.vsixgallery.com/api/upload"
+    #$vsixUploadEndpoint = "https://localhost:44372/api/upload"
     
     
     [Reflection.Assembly]::LoadWithPartialName("System.Web") | Out-Null
