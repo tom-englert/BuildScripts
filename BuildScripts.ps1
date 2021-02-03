@@ -184,6 +184,32 @@ function Source-SetBuildVersionToRevision
     return $matchInfo.Matches[0].Groups[1].Value
 }
 
+# replace a version template in a file with the actual version.
+# the default template is "0.0.0.0".
+# returns the version
+function File-PatchVersion
+{
+    [cmdletbinding()]
+    param (
+        [Parameter(Position=0, Mandatory=1)]
+        [string]$sourceFilePath,
+
+        [Parameter(Position=1, Mandatory=1, ValueFromPipeline=$true)]
+        [string]$version,
+
+        [Parameter(Position=2, Mandatory=0)]
+        [string]$versionTemplate = "0.0.0.0"
+    )
+
+    "File-PatchVersion: $sourceFilePath, $version, $versionTemplate" | Write-Host
+
+    $source = Get-Content $sourceFilePath
+    $source = $source -replace $versionTemplate, $version
+    $source | Set-Content $sourceFilePath
+
+    return $version
+}
+
 # generates the command string to update the vsNext build number by appending _$version
 # write this command to the host to let the build server execute it.
 function Build-AppendVersionToBuildNumber

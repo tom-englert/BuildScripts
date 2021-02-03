@@ -37,7 +37,7 @@ Copy-Item "TestFiles\Source\*.*" "TestFiles\Test" -Force
 
 
 $uploadUrl = Vsix-GetUpoadUrl $repository
-Assert-AreEqual "http://vsixgallery.com/api/upload?repo=https%3a%2f%2fgithub.com%2ftom-englert%2ftest&issuetracker=https%3a%2f%2fgithub.com%2ftom-englert%2ftest%2fissues" $uploadUrl
+Assert-AreEqual "https://www.vsixgallery.com/api/upload?repo=https%3a%2f%2fgithub.com%2ftom-englert%2ftest&issuetracker=https%3a%2f%2fgithub.com%2ftom-englert%2ftest%2fissues" $uploadUrl
 
 $newVersion = Source-SetBuildVersion "$PSScriptRoot\TestFiles\Test\version.cs" $version
 Assert-AreEqual "1.0.42.0" $newVersion
@@ -46,6 +46,10 @@ Assert-FilesEqual "version.cs"
 $newVersion = Vsix-SetBuildVersion "$PSScriptRoot\TestFiles\Test\source.extension.vsixmanifest" $version
 Assert-AreEqual "1.0.42" $newVersion
 Assert-FilesEqual "source.extension.vsixmanifest"
+
+$newVersion = File-PatchVersion "$PSScriptRoot\TestFiles\Test\template.vsixmanifest" "1.2.3.4"
+Assert-AreEqual "1.2.3.4" $newVersion
+Assert-FilesEqual "template.vsixmanifest"
 
 $newVersion = Project-SetBuildVersion "$PSScriptRoot\TestFiles\Test\ResXManager.csproj" $version
 Assert-AreEqual "1.0.42.99" $newVersion
