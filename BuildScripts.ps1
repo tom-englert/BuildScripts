@@ -27,6 +27,8 @@ function Vsix-SetBuildVersion
         [int]$buildNumber = $env:BUILD_BUILDID
     )
 
+    $buildNumber = $buildNumber % [uint16]::MaxValue
+
     "Vsix-SetBuildVersion: $manifestFilePath, $buildNumber" | Write-Host
 
     [xml]$vsixXml = Get-Content $manifestFilePath
@@ -54,6 +56,8 @@ function Project-SetBuildVersion
         [Parameter(Position=1, Mandatory=0)]
         [int]$buildNumber = $env:BUILD_BUILDID
     )
+
+    $buildNumber = $buildNumber % [uint16]::MaxValue
 
     "Project-SetBuildVersion: $projectFilePath, $buildNumber" | Write-Host
 
@@ -87,6 +91,8 @@ function Project-SetVersion
         [int]$buildNumber = $env:BUILD_BUILDID
     )
 
+    $buildNumber = $buildNumber % [uint16]::MaxValue
+
     "Project-SetVersion: $projectFilePath, $buildNumber" | Write-Host
 
     [xml]$projectXml=Get-Content $projectFilePath
@@ -116,6 +122,8 @@ function Project-SetVersionRevision
         [Parameter(Position=1, Mandatory=0)]
         [int]$buildNumber = $env:BUILD_BUILDID
     )
+
+    $buildNumber = $buildNumber % [uint16]::MaxValue
 
     "Project-SetVersionRevision: $projectFilePath, $buildNumber" | Write-Host
 
@@ -148,6 +156,8 @@ function Source-SetBuildVersion
         [int]$buildNumber = $env:BUILD_BUILDID
     )
 
+    $buildNumber = $buildNumber % [uint16]::MaxValue
+
     "Source-SetBuildVersion: $sourceFilePath, $buildNumber" | Write-Host
 
     $source = Get-Content $sourceFilePath
@@ -172,6 +182,8 @@ function Source-SetBuildVersionToRevision
         [Parameter(Position=1, Mandatory=0)]
         [int]$buildNumber = $env:BUILD_BUILDID
     )
+
+    $buildNumber = $buildNumber % [uint16]::MaxValue
 
     "Source-SetBuildVersionToRevision: $sourceFilePath, $buildNumber" | Write-Host
 
